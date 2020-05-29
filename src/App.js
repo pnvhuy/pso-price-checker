@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 
 import Form from './components/form/Form';
+import List from './components/list/List';
+
 
 class App extends Component {
   render() {
@@ -16,6 +18,10 @@ class App extends Component {
 
         <div>
 			<Form />
+        </div>
+
+        <div>
+			<List />
         </div>
       </div>
     );
