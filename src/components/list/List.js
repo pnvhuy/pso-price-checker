@@ -10,14 +10,7 @@ import React, { Component } from 'react';
 
 // class List extends Component{
 
-// 	constructor(props) {
 
-// 		super(props);
-
-// 		this.state = {
-// 			foo: 1,
-// 		}
-// 	}
 
 
 
@@ -42,23 +35,52 @@ import React, { Component } from 'react';
 
 // import React, { Component } from 'react';
 
-	function getStuff() {
-		fetch('http://localhost:4200/users')
-			.then(response => response.json())
-			.then(data => console.log(data));
-	}
+	
 
 class List extends Component {
 
+		constructor(props) {
+
+		super(props);
+
+		this.state = {
+			foo: [3],
+		}
+	}
+
+	
+	getList() {
+		fetch('http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200/foos')
+			.then(response => response.json())
+			.then(data => {
+				console.log('data', data);
+				this.setState({
+					foo: data.map(dat => dat.name)
+				})
+			});
+	}
+
   	render() {
+
+
+		const { foo } = this.state;
+
 		return (
 			<div className="cm-list">
 				<div>
 					<p>This is my list</p>
 
 					<button onClick={() => {
-						getStuff();
+						this.getList();
 					}}></button>
+
+					<ul>
+					{foo.map((boo, i) => {
+						return (
+							<li key={i}>{boo}</li>
+						)
+					})}
+					</ul>
 				</div>
 			</div>
 		);
