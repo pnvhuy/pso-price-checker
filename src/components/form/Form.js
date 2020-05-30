@@ -15,6 +15,21 @@ class Form extends Component {
 			category: 'WEAPON',  //default
 			type_id: 'BUY',
 			special_id: '',
+
+			item_base: '',
+			item_special: '',
+			item_native: '',
+			item_altered_beast: '',
+			item_machine: '',
+			item_dark: '',
+			item_hit: '',
+			item_dfp: '',
+			item_evp: '',
+
+			price_item: '',
+			price_type: 'BUY',
+			price_value: '',
+			price_complete: '',
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -22,13 +37,24 @@ class Form extends Component {
 		this.handleChangeType = this.handleChangeType.bind(this);
 		this.handleChangeSpecial = this.handleChangeSpecial.bind(this);
 
+		this.handleChangeItemBase = this.handleChangeItemBase.bind(this);
+		this.handleChangeItemSpecial = this.handleChangeItemSpecial.bind(this);
+		this.handleChangeItemNative = this.handleChangeItemNative.bind(this);
+		this.handleChangeItemAlteredBeast = this.handleChangeItemAlteredBeast.bind(this);
+		this.handleChangeItemMachine = this.handleChangeItemMachine.bind(this);
+		this.handleChangeItemDark = this.handleChangeItemDark.bind(this);
+		this.handleChangeItemHit = this.handleChangeItemHit.bind(this);
+		this.handleChangeItemDfp = this.handleChangeItemDfp.bind(this);
+		this.handleChangeItemEvp = this.handleChangeItemEvp.bind(this);
+
 		this.handleChangePriceItem = this.handleChangePriceItem.bind(this);
 		this.handleChangePriceType = this.handleChangePriceType.bind(this);
 		this.handleChangePriceValue = this.handleChangePriceValue.bind(this);
 		this.handleChangePriceComplete = this.handleChangePriceComplete.bind(this);
 
-
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleSubmit2 = this.handleSubmit2.bind(this);
+		this.handleSubmit3 = this.handleSubmit3.bind(this);
 	}
 
 	handleChange(event) {
@@ -82,30 +108,59 @@ class Form extends Component {
 		return false;
 	}
 
+	/////
 
-	handleChangePriceItem(event) {
+	handleChangeItemBase(event) {
 		this.setState({
-			special_id: event.target.value
+			item_base: event.target.value
 		});
 	}
 
-
-	handleChangePriceType(event) {
+	handleChangeItemSpecial(event) {
 		this.setState({
-			special_id: event.target.value
+			item_special: event.target.value
 		});
 	}
 
-
-	handleChangePriceValue(event) {
+	handleChangeItemNative(event) {
 		this.setState({
-			special_id: event.target.value
+			item_native: event.target.value
 		});
 	}
 
-	handleChangePriceComplete(event) {
+	handleChangeItemAlteredBeast(event) {
 		this.setState({
-			special_id: event.target.checked
+			item_altered_beast: event.target.value
+		});
+	}
+
+	handleChangeItemMachine(event) {
+		this.setState({
+			item_machine: event.target.value
+		});
+	}
+
+	handleChangeItemDark(event) {
+		this.setState({
+			item_dark: event.target.value
+		});
+	}
+
+	handleChangeItemHit(event) {
+		this.setState({
+			item_hit: event.target.value
+		});
+	}
+
+	handleChangeItemDfp(event) {
+		this.setState({
+			item_dfp: event.target.value
+		});
+	}
+
+	handleChangeItemEvp(event) {
+		this.setState({
+			item_evp: event.target.value
 		});
 	}
 
@@ -116,16 +171,75 @@ class Form extends Component {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				// name: this.state.name,
-				// category: this.state.category,
-				// type_id: this.state.type_id,
-				// special_id: this.state.special_id,
+				item_base: this.state.item_base,
+				item_special: this.state.item_special,
+				item_native: this.state.item_native,
+				item_altered_beast: this.state.item_altered_beast,
+				item_machine: this.state.item_machine,
+				item_dark: this.state.item_dark,
+				item_hit: this.state.item_hit,
+				item_dfp: this.state.item_dfp,
+				item_evp: this.state.item_evp,
 			}),
 		})
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				this.props.methods.updateList();
+				this.props.methods.updateItemList();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+
+		event.preventDefault();
+
+		return false;
+	}
+
+	/////
+
+	handleChangePriceItem(event) {
+		this.setState({
+			price_item: event.target.value
+		});
+	}
+
+	handleChangePriceType(event) {
+		this.setState({
+			price_type: event.target.value
+		});
+	}
+
+
+	handleChangePriceValue(event) {
+		this.setState({
+			price_value: event.target.value
+		});
+	}
+
+	handleChangePriceComplete(event) {
+		this.setState({
+			price_complete: event.target.checked
+		});
+	}
+
+	handleSubmit3(event) {
+		fetch(`${dbUrl}/prices`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				price_item: this.state.price_item,
+				price_type: this.state.price_type,
+				price_value: this.state.price_value,
+				price_complete: this.state.price_complete,
+			}),
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				this.props.methods.updatePriceList();
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -137,7 +251,7 @@ class Form extends Component {
 	}
 
 	render() {
-		const { itemTypes, itemSpecials, itemBaseList } = this.props.data;
+		const { itemTypes, itemSpecials, itemBaseList, itemList } = this.props.data;
 
 		return (
 			<React.Fragment>
@@ -147,7 +261,7 @@ class Form extends Component {
 					</div>
 					<form>
 						<label> Name:
-						<input type="text" name="item-name" id="item-name" value={this.state.name} onChange={this.handleChange} />
+							<input type="text" name="item-base-name" id="item-base-name" value={this.state.name} onChange={this.handleChange} />
 						</label>
 
 						<label> Category:
@@ -159,7 +273,7 @@ class Form extends Component {
 						</label>
 
 						<label> Type:
-						<select name="item-type" id="item-type" onChange={this.handleChangeType}>
+							<select name="item-base-type" id="item-base-type" onChange={this.handleChangeType}>
 								<option value={null}>{'None'}</option>
 
 								{itemTypes.map((itemType, i) => (
@@ -170,7 +284,7 @@ class Form extends Component {
 
 
 						<label> Special:
-						<select name="item-special" id="item-special" onChange={this.handleChangeSpecial}>
+							<select name="item-base-special" id="item-base-special" onChange={this.handleChangeSpecial}>
 								<option value={null}>{'None'}</option>
 
 								{itemSpecials.map((itemSpecial, i) => (
@@ -182,15 +296,65 @@ class Form extends Component {
 						<input type="button" value="Submit" onClick={this.handleSubmit} />
 					</form>
 				</div>
+
 				<div className="cm-form2">
+					<div>
+						<h3>Create Item</h3>
+					</div>
+					<form>
+						<label> Base Item:
+							<select name="item-base" id="item-base" onChange={this.handleChangeItemBase}>
+								{itemBaseList.map((baseItem, i) => (
+									<option key={i} value={baseItem.id}>{baseItem.name}</option>
+								))}
+							</select>
+						</label>
+						
+						<label> Special:
+							<input type="text" name="item-special" id="item-special" value={this.state.value} onChange={this.handleChangeItemSpecial} />
+						</label>
+
+						<label> Native:
+							<input type="text" name="item-native" id="item-native" value={this.state.value} onChange={this.handleChangeItemNative} />
+						</label>
+
+						<label> Altered Beast:
+							<input type="text" name="item-altered-beast" id="item-altered-beast" value={this.state.value} onChange={this.handleChangeItemAlteredBeast} />
+						</label>
+
+						<label> Machine:
+							<input type="text" name="item-machine" id="item-machine" value={this.state.value} onChange={this.handleChangeItemMachine} />
+						</label>
+
+						<label> Dark:
+							<input type="text" name="item-dark" id="item-dark" value={this.state.value} onChange={this.handleChangeItemDark} />
+						</label>
+
+						<label> Hit:
+							<input type="text" name="item-hit" id="item-hit" value={this.state.value} onChange={this.handleChangeItemHit} />
+						</label>
+
+						<label> DFP:
+							<input type="text" name="item-dfp" id="item-dfp" value={this.state.value} onChange={this.handleChangeItemDfp} />
+						</label>
+						
+						<label> EVP:
+							<input type="text" name="item-evp" id="item-evp" value={this.state.value} onChange={this.handleChangeItemEvp} />
+						</label>
+
+						<input type="button" value="Submit" onClick={this.handleSubmit2} />
+					</form>
+				</div>
+
+				<div className="cm-form3">
 					<div>
 						<h3>Create Price</h3>
 					</div>
 					<form>
 						<label> Base Item:
 							<select name="price-item" id="price-item" onChange={this.handleChangePriceItem}>
-								{itemBaseList.map((baseItem, i) => (
-									<option key={i} value={baseItem.id}>{baseItem.name}</option>
+								{itemList.map((item, i) => (
+									<option key={i} value={item.id}>{item.name}</option>
 								))}
 							</select>
 						</label>
@@ -201,7 +365,7 @@ class Form extends Component {
 						
 
 						<label> Price Type:
-						<select name="price-type" id="price-type" onChange={this.handleChangePriceType}>
+							<select name="price-type" id="price-type" onChange={this.handleChangePriceType}>
 								{priceTypes.map((priceType, i) => (
 									<option key={i} value={priceType}>{priceType}</option>
 								))}
@@ -213,7 +377,7 @@ class Form extends Component {
 							<input type="checkbox" id="price-complete" name="price-complete" onChange={this.handleChangePriceComplete }/>
 						</label>
 
-						<input type="button" value="Submit" onClick={this.handleSubmit2} />
+						<input type="button" value="Submit" onClick={this.handleSubmit3} />
 					</form>
 				</div>
 			</React.Fragment>

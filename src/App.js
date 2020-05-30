@@ -18,6 +18,7 @@ class App extends Component {
             itemSpecials: [],
             itemBaseList: [],
             itemList: [],
+            priceList: [],
         };
 
         fetch(`${dbUrl}/items-type`, {
@@ -58,11 +59,39 @@ class App extends Component {
 		.catch((error) => {
 			console.error('Error:', error);
         });
+
+        fetch(`${dbUrl}/items`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemList: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+
+        fetch(`${dbUrl}/prices`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                priceList: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
         
-        this.updateList = this.updateList.bind(this);
+        this.updateItemBaseList = this.updateItemBaseList.bind(this);
+        this.updateItemList = this.updateItemList.bind(this);
+        this.updatePriceList = this.updatePriceList.bind(this);
     }
         
-    updateList() {
+    updateItemBaseList() {
         fetch(`${dbUrl}/items-base`, {
 			method: 'GET',
 		})
@@ -77,8 +106,38 @@ class App extends Component {
         });
     }
 
+    updateItemList() {
+        fetch(`${dbUrl}/items`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemList: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+    }
+
+    updatePriceList() {
+        fetch(`${dbUrl}/prices`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                priceList: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+    }
+
   render() {
-    const { itemTypes, itemSpecials, itemBaseList } = this.state;
+    const { itemTypes, itemSpecials, itemBaseList, itemList, priceList } = this.state;
 
     return (
       <div className="App">
@@ -93,10 +152,12 @@ class App extends Component {
                 data={{
                     itemTypes,
                     itemSpecials,
-                    itemBaseList
+                    itemBaseList,
+                    itemList,
+                    priceList,
                 }}
                 methods={{
-                    updateList: this.updateList
+                    updateItemBaseList: this.updateItemBaseList
                 }}
             />
         </div>
@@ -104,7 +165,9 @@ class App extends Component {
         <div>
             <List 
                 data={{ 
-                    itemBaseList
+                    itemBaseList,
+                    itemList,
+                    priceList
                 }}
             />
         </div>
