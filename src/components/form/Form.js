@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 
+const dbUrl = "http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200";
+
 class Form extends Component {
 
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			name: ''
+			name: '',
+			category: '', 
+			type_id: '', 
+			special_id: '',
 		};
 	
 		this.handleChange = this.handleChange.bind(this);
@@ -13,12 +19,13 @@ class Form extends Component {
 	  }
 
 	handleChange(event) {
-		this.setState({name: event.target.value});
+		this.setState({
+			name: event.target.value
+		});
 	  }
 
 	handleSubmit(event) {
-
-		fetch('http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200/users', {
+		fetch(`${dbUrl}/items-base`, {
 			method: 'POST', // or 'PUT'
 			headers: {
 				'Content-Type': 'application/json',
@@ -31,20 +38,21 @@ class Form extends Component {
 		.then(response => response.json())
 		.then(data => {
 			console.log('Success:', data);
+			this.props.updateList();
 		})
 		.catch((error) => {
 			console.error('Error:', error);
 		});
 
 		// alert('A name was submitted: ' + this.state.name);
-		fetch('http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200/users')
-			.then(response => response.json())
-			.then(data => {
-				console.log('data', data);
-				this.setState({
-					foo: data.map(dat => dat.name)
-				})
-			});
+		// fetch(`${dbUrl}/items-base`)
+		// 	.then(response => response.json())
+		// 	.then(data => {
+		// 		console.log('data', data);
+		// 		this.setState({
+		// 			foo: data.map(dat => dat.name)
+		// 		})
+		// 	});
 		event.preventDefault();
 	}
 
@@ -52,13 +60,25 @@ class Form extends Component {
 		return (
 			<div className="cm-form">
 				<div>
-					<p>This is my form</p>
+					<h3>Item Base</h3>
 				</div>
 				<form onSubmit={this.handleSubmit}>
-					<label>
-					Name:
-					<input type="text" value={this.state.name} onChange={this.handleChange} />
+					<label> Name:
+						<input type="text" value={this.state.name} onChange={this.handleChange} />
 					</label>
+
+					<label> Category:
+						<input type="text" value={this.state.name} onChange={this.handleChange} />
+					</label>
+
+					<label> Type:
+						<input type="text" value={this.state.name} onChange={this.handleChange} />
+					</label>
+
+					<label> Special:
+						<input type="text" value={this.state.name} onChange={this.handleChange} />
+					</label>
+
 					<input type="submit" value="Submit" />
 				</form>
 			</div>

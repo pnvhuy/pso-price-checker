@@ -5,10 +5,81 @@ import './App.css';
 import Form from './components/form/Form';
 import List from './components/list/List';
 
-
+const dbUrl = "http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200";
 
 class App extends Component {
+
+    constructor(props) {
+
+		super(props);
+
+		this.state = {
+            itemTypes: [],
+            itemSpecials: [],
+            itemBaseList: [],
+            itemList: [],
+        };
+
+        fetch(`${dbUrl}/item-type`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemTypes: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+        
+        fetch(`${dbUrl}/items-special`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemSpecials: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+
+        fetch(`${dbUrl}/items-base`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemBaseList: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+        
+        this.updateList = this.updateList.bind(this);
+    }
+        
+    updateList() {
+        fetch(`${dbUrl}/item-type`, {
+			method: 'GET',
+		})
+		.then(response => response.json())
+		.then(data => {
+            this.setState({
+                itemTypes: data, 
+            })
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+        });
+    }
+
   render() {
+    const { itemTypes, itemSpecials, itemBaseList } = this.state;
+
     return (
       <div className="App">
 		  
@@ -18,11 +89,23 @@ class App extends Component {
         </div>
 
         <div>
-			<Form />
+            <Form 
+                data={{
+                    itemTypes,
+                    itemSpecials
+                }}
+                methods={{
+                    updateList: this.updateList
+                }}
+            />
         </div>
 
         <div>
-			<List />
+            <List 
+                data={{ 
+                    itemBaseList
+                }}
+            />
         </div>
       </div>
     );
