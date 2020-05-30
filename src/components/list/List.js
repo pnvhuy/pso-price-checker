@@ -8,35 +8,6 @@ import React, { Component } from 'react';
 // 	// foo: number;
 // }
 
-// class List extends Component{
-
-
-
-
-
-//   	public render() {
-
-
-// 		return (
-// 			<div className="cm-list">
-// 				<div>
-// 					<p>This is my list</p>
-// 					<button onClick={() => {
-// 						this.getStuff();
-// 					}}></button>
-// 				</div>
-// 			</div>
-// 		);
-// 	}
-// }
-
-// export default List;
-
-
-// import React, { Component } from 'react';
-
-	
-
 class List extends Component {
 
 		constructor(props) {
@@ -44,43 +15,46 @@ class List extends Component {
 		super(props);
 
 		this.state = {
-			foo: [3],
 		}
 	}
 
-	
-	getList() {
-		fetch('http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200/foos')
-			.then(response => response.json())
-			.then(data => {
-				console.log('data', data);
-				this.setState({
-					foo: data.map(dat => dat.name)
-				})
-			});
-	}
-
   	render() {
+		// const { foo } = this.state;
+		const { itemBaseList } = this.props.data;
 
-
-		const { foo } = this.state;
+		const list = itemBaseList ? itemBaseList : [];
 
 		return (
 			<div className="cm-list">
 				<div>
-					<p>This is my list</p>
+					<h3>Base Item List</h3>
 
 					<button onClick={() => {
-						this.getList();
 					}}></button>
 
-					<ul>
-					{foo.map((boo, i) => {
-						return (
-							<li key={i}>{boo}</li>
-						)
-					})}
-					</ul>
+					<table >
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Category</th>
+								<th>Type</th>
+								<th>Special</th>
+							</tr>
+						</thead>
+						<tbody>
+								{list.map((baseItem, i) => {
+									return (
+										<tr key={i} >
+											<td>{baseItem.name}</td>
+											<td>{baseItem.category}</td>
+											<td>{baseItem.type_name}</td>
+											<td>{baseItem.special_name}</td>
+										</tr>
+									)
+								})}
+						</tbody>
+					
+					</table>
 				</div>
 			</div>
 		);

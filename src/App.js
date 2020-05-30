@@ -20,7 +20,7 @@ class App extends Component {
             itemList: [],
         };
 
-        fetch(`${dbUrl}/item-type`, {
+        fetch(`${dbUrl}/items-type`, {
 			method: 'GET',
 		})
 		.then(response => response.json())
@@ -63,13 +63,13 @@ class App extends Component {
     }
         
     updateList() {
-        fetch(`${dbUrl}/item-type`, {
+        fetch(`${dbUrl}/items-base`, {
 			method: 'GET',
 		})
 		.then(response => response.json())
 		.then(data => {
             this.setState({
-                itemTypes: data, 
+                itemBaseList: data, 
             })
 		})
 		.catch((error) => {
@@ -92,7 +92,8 @@ class App extends Component {
             <Form 
                 data={{
                     itemTypes,
-                    itemSpecials
+                    itemSpecials,
+                    itemBaseList
                 }}
                 methods={{
                     updateList: this.updateList
