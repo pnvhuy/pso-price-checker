@@ -298,25 +298,38 @@ class Form extends Component {
 							</select>
 						</label>
 
-						<label> Type:
-							<select name="item-base-type" id="item-base-type" onChange={this.handleChangeType}>
-								<option value={null}>{'None'}</option>
+						{Boolean(
+							this.state.category && 
+							(
+								this.state.category === 'WEAPON' ||
+								this.state.category === 'TOOL'
+							)
+						) && (
+							<label> Type:
+								<select name="item-base-type" id="item-base-type" onChange={this.handleChangeType}>
+									<option value={''}>{'None'}</option>
 
-								{itemTypes.map((itemType, i) => (
-									<option key={i} value={itemType.id}>{itemType.name}</option>
-								))}
-							</select>
-						</label>
+									{itemTypes.map((itemType, i) => (
+										<option key={i} value={itemType.id}>{itemType.name}</option>
+									))}
+								</select>
+							</label>
+						)}
 
-						<label> Special:
-							<select name="item-base-special" id="item-base-special" onChange={this.handleChangeSpecial}>
-								<option value={null}>{'None'}</option>
+						{Boolean(
+							this.state.category && 
+							this.state.category === 'WEAPON'
+						) && (
+							<label> Special:
+								<select name="item-base-special" id="item-base-special" onChange={this.handleChangeSpecial}>
+									<option value={''}>{'None'}</option>
 
-								{itemSpecials.map((itemSpecial, i) => (
-									<option key={i} value={itemSpecial.id}>{itemSpecial.name}</option>
-								))}
-							</select>
-						</label>
+									{itemSpecials.map((itemSpecial, i) => (
+										<option key={i} value={itemSpecial.id}>{itemSpecial.name}</option>
+									))}
+								</select>
+							</label>
+						)}
 
 						<input type="button" value="Submit" onClick={this.handleSubmit} />
 					</form>
@@ -336,7 +349,7 @@ class Form extends Component {
 					<form>
 						<label> Base Item:
 							<select name="item-base" id="item-base" onChange={this.handleChangeItemBase}>
-								<option value={null}>{'None'}</option>
+								<option value={''}>{'None'}</option>
 
 								{itemBaseList.map((baseItem, i) => (
 									<option key={i} value={baseItem.id}>{baseItem.name}</option>
@@ -350,14 +363,22 @@ class Form extends Component {
 							this.state.selected_item_base.category === 'WEAPON'
 						) && (
 							<React.Fragment>
+								{console.log('this.state.selected_item_base', this.state.selected_item_base)}
 								<label> Special:
-									<select name="item-special" id="item-special" onChange={this.handleChangeItemSpecial}>
-										<option value={null}>{'None'}</option>
+									{
+										Boolean(this.state.selected_item_base.special_name) ? (
+											<span style={{ marginLeft: '5px' }}>[{this.state.selected_item_base.special_name}]</span>
+										) : (
+											<select name="item-special" id="item-special" onChange={this.handleChangeItemSpecial}>
+												<option value={''}>{'None'}</option>
 
-										{itemSpecials.map((itemSpecial, i) => (
-											<option key={i} value={itemSpecial.id}>{itemSpecial.name}</option>
-										))}
-									</select>
+												{itemSpecials.map((itemSpecial, i) => (
+													<option key={i} value={itemSpecial.id}>{itemSpecial.name}</option>
+												))}
+											</select>
+										)
+									}
+									
 								</label>
 
 								<label> Native:
@@ -413,7 +434,7 @@ class Form extends Component {
 					<form>
 						<label> Base Item:
 							<select name="price-item" id="price-item" onChange={this.handleChangePriceItem}>
-								<option value={null}>{'None'}</option>
+								<option value={''}>{'None'}</option>
 
 								{itemList.map((item, i) => (
 									<option key={i} value={item.id}>{item.base_name} [{item.native}/{item.altered_beast}/{item.machine}/{item.dark}|{item.hit}]</option>
