@@ -52,5 +52,6 @@ input, select {
 }
 
 body {
+  background-color: red;
   padding-bottom: 80px;
 }
