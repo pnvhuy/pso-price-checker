@@ -13,11 +13,11 @@ class Form extends Component {
 		this.state = {
 			name: '',
 			category: 'WEAPON',  //default
-			type_id: 'BUY',
+			type_id: '',
 			special_id: '',
 
-			item_base: '',
-			item_special: '',
+			item_base_id: '',
+			item_special_id: '',
 			item_native: '',
 			item_altered_beast: '',
 			item_machine: '',
@@ -26,8 +26,10 @@ class Form extends Component {
 			item_dfp: '',
 			item_evp: '',
 
-			price_item: '',
-			price_type: 'BUY',
+			selected_item_base: null,
+
+			price_item_id: '',
+			price_type: 'BUY', //default
 			price_value: '',
 			price_complete: '',
 		};
@@ -57,6 +59,14 @@ class Form extends Component {
 		this.handleSubmit3 = this.handleSubmit3.bind(this);
 	}
 
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		// if(!this.state.selected_item_base && nextProps.data.itemBaseList && nextProps.data.itemBaseList.length) {
+		// 	this.setState({
+		// 		selected_item_base: nextProps.data.itemBaseList[0],
+		// 	});
+		// }
+	}
+ 
 	handleChange(event) {
 		this.setState({
 			name: event.target.value
@@ -97,7 +107,7 @@ class Form extends Component {
 			.then(response => response.json())
 			.then(data => {
 				console.log('Success:', data);
-				this.props.methods.updateList();
+				this.props.methods.updateItemBaseList();
 			})
 			.catch((error) => {
 				console.error('Error:', error);
@@ -112,13 +122,22 @@ class Form extends Component {
 
 	handleChangeItemBase(event) {
 		this.setState({
-			item_base: event.target.value
+			item_base_id: event.target.value,
+			selected_item_base: this.props.data.itemBaseList.find(itemBase => String(itemBase.id) === event.target.value),
+			item_special_id: '',
+			item_native: '',
+			item_altered_beast: '',
+			item_machine: '',
+			item_dark: '',
+			item_hit: '',
+			item_dfp: '',
+			item_evp: '',
 		});
 	}
 
 	handleChangeItemSpecial(event) {
 		this.setState({
-			item_special: event.target.value
+			item_special_id: event.target.value
 		});
 	}
 
@@ -171,15 +190,15 @@ class Form extends Component {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				item_base: this.state.item_base,
-				item_special: this.state.item_special,
-				item_native: this.state.item_native,
-				item_altered_beast: this.state.item_altered_beast,
-				item_machine: this.state.item_machine,
-				item_dark: this.state.item_dark,
-				item_hit: this.state.item_hit,
-				item_dfp: this.state.item_dfp,
-				item_evp: this.state.item_evp,
+				item_base_id: this.state.item_base_id,
+				special_id: this.state.item_special_id,
+				native: this.state.item_native,
+				altered_beast: this.state.item_altered_beast,
+				machine: this.state.item_machine,
+				dark: this.state.item_dark,
+				hit: this.state.item_hit,
+				dfp: this.state.item_dfp,
+				evp: this.state.item_evp,
 			}),
 		})
 			.then(response => response.json())
@@ -200,7 +219,7 @@ class Form extends Component {
 
 	handleChangePriceItem(event) {
 		this.setState({
-			price_item: event.target.value
+			price_item_id: event.target.value
 		});
 	}
 
@@ -230,10 +249,10 @@ class Form extends Component {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				price_item: this.state.price_item,
-				price_type: this.state.price_type,
-				price_value: this.state.price_value,
-				price_complete: this.state.price_complete,
+				item_id: this.state.price_item_id,
+				type: this.state.price_type,
+				value: this.state.price_value,
+				is_complete: this.state.price_complete,
 			}),
 		})
 			.then(response => response.json())
@@ -254,8 +273,15 @@ class Form extends Component {
 		const { itemTypes, itemSpecials, itemBaseList, itemList } = this.props.data;
 
 		return (
-			<React.Fragment>
-				<div className="cm-form">
+			<div style={{
+				display: 'flex',
+				justifyContent: 'space-around',
+			}}>
+				<div className="cm-form" style={{
+					border: '1px solid black',
+					padding: '20px',
+					textAlign: 'left'
+				}}>
 					<div>
 						<h3>Create Base Item</h3>
 					</div>
@@ -282,7 +308,6 @@ class Form extends Component {
 							</select>
 						</label>
 
-
 						<label> Special:
 							<select name="item-base-special" id="item-base-special" onChange={this.handleChangeSpecial}>
 								<option value={null}>{'None'}</option>
@@ -297,72 +322,108 @@ class Form extends Component {
 					</form>
 				</div>
 
-				<div className="cm-form2">
+				<div className="cm-form2" style={{
+					border: '1px solid black',
+					padding: '20px',
+					textAlign: 'left'
+				}}>
 					<div>
-						<h3>Create Item</h3>
+						<h3>Create {
+							Boolean(this.state.selected_item_base && this.state.selected_item_base.category) ? 
+							this.state.selected_item_base.category : ''
+						} Item</h3>
 					</div>
 					<form>
 						<label> Base Item:
 							<select name="item-base" id="item-base" onChange={this.handleChangeItemBase}>
+								<option value={null}>{'None'}</option>
+
 								{itemBaseList.map((baseItem, i) => (
 									<option key={i} value={baseItem.id}>{baseItem.name}</option>
 								))}
 							</select>
 						</label>
+
+						{Boolean(
+							this.state.selected_item_base && 
+							this.state.selected_item_base.category &&
+							this.state.selected_item_base.category === 'WEAPON'
+						) && (
+							<React.Fragment>
+								<label> Special:
+									<select name="item-special" id="item-special" onChange={this.handleChangeItemSpecial}>
+										<option value={null}>{'None'}</option>
+
+										{itemSpecials.map((itemSpecial, i) => (
+											<option key={i} value={itemSpecial.id}>{itemSpecial.name}</option>
+										))}
+									</select>
+								</label>
+
+								<label> Native:
+									<input type="text" name="item-native" id="item-native" value={this.state.item_native} onChange={this.handleChangeItemNative} />
+								</label>
+
+								<label> Altered Beast:
+									<input type="text" name="item-altered-beast" id="item-altered-beast" value={this.state.item_altered_beast} onChange={this.handleChangeItemAlteredBeast} />
+								</label>
+
+								<label> Machine:
+									<input type="text" name="item-machine" id="item-machine" value={this.state.item_machine} onChange={this.handleChangeItemMachine} />
+								</label>
+
+								<label> Dark:
+									<input type="text" name="item-dark" id="item-dark" value={this.state.item_dark} onChange={this.handleChangeItemDark} />
+								</label>
+
+								<label> Hit:
+									<input type="text" name="item-hit" id="item-hit" value={this.state.item_hit} onChange={this.handleChangeItemHit} />
+								</label>
+							</React.Fragment>
+						)}
 						
-						<label> Special:
-							<input type="text" name="item-special" id="item-special" value={this.state.value} onChange={this.handleChangeItemSpecial} />
-						</label>
-
-						<label> Native:
-							<input type="text" name="item-native" id="item-native" value={this.state.value} onChange={this.handleChangeItemNative} />
-						</label>
-
-						<label> Altered Beast:
-							<input type="text" name="item-altered-beast" id="item-altered-beast" value={this.state.value} onChange={this.handleChangeItemAlteredBeast} />
-						</label>
-
-						<label> Machine:
-							<input type="text" name="item-machine" id="item-machine" value={this.state.value} onChange={this.handleChangeItemMachine} />
-						</label>
-
-						<label> Dark:
-							<input type="text" name="item-dark" id="item-dark" value={this.state.value} onChange={this.handleChangeItemDark} />
-						</label>
-
-						<label> Hit:
-							<input type="text" name="item-hit" id="item-hit" value={this.state.value} onChange={this.handleChangeItemHit} />
-						</label>
-
-						<label> DFP:
-							<input type="text" name="item-dfp" id="item-dfp" value={this.state.value} onChange={this.handleChangeItemDfp} />
-						</label>
-						
-						<label> EVP:
-							<input type="text" name="item-evp" id="item-evp" value={this.state.value} onChange={this.handleChangeItemEvp} />
-						</label>
+						{Boolean(
+							this.state.selected_item_base && 
+							this.state.selected_item_base.category &&
+							this.state.selected_item_base.category === 'FRAME'
+						) && (
+							<React.Fragment>
+								<label> DFP:
+									<input type="text" name="item-dfp" id="item-dfp" value={this.state.item_dfp} onChange={this.handleChangeItemDfp} />
+								</label>
+								
+								<label> EVP:
+									<input type="text" name="item-evp" id="item-evp" value={this.state.item_evp} onChange={this.handleChangeItemEvp} />
+								</label>
+							</React.Fragment>
+						)}
 
 						<input type="button" value="Submit" onClick={this.handleSubmit2} />
 					</form>
 				</div>
 
-				<div className="cm-form3">
+				<div className="cm-form3" style={{
+					border: '1px solid black',
+					padding: '20px',
+					textAlign: 'left'
+				}}>
 					<div>
 						<h3>Create Price</h3>
 					</div>
 					<form>
 						<label> Base Item:
 							<select name="price-item" id="price-item" onChange={this.handleChangePriceItem}>
+								<option value={null}>{'None'}</option>
+
 								{itemList.map((item, i) => (
-									<option key={i} value={item.id}>{item.name}</option>
+									<option key={i} value={item.id}>{item.base_name} [{item.native}/{item.altered_beast}/{item.machine}/{item.dark}|{item.hit}]</option>
 								))}
 							</select>
 						</label>
 						
 						<label> PD:
-							<input type="text" name="price-value" id="price-value" value={this.state.value} onChange={this.handleChangePriceValue} />
+							<input type="text" name="price-value" id="price-value" value={this.state.price_value} onChange={this.handleChangePriceValue} />
 						</label>
-						
 
 						<label> Price Type:
 							<select name="price-type" id="price-type" onChange={this.handleChangePriceType}>
@@ -372,7 +433,6 @@ class Form extends Component {
 							</select>
 						</label>
 
-
 						<label> Complete:
 							<input type="checkbox" id="price-complete" name="price-complete" onChange={this.handleChangePriceComplete }/>
 						</label>
@@ -380,7 +440,7 @@ class Form extends Component {
 						<input type="button" value="Submit" onClick={this.handleSubmit3} />
 					</form>
 				</div>
-			</React.Fragment>
+			</div>
 
 		);
 	}

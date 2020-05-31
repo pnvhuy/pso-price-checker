@@ -157,7 +157,9 @@ class App extends Component {
                     priceList,
                 }}
                 methods={{
-                    updateItemBaseList: this.updateItemBaseList
+                    updateItemBaseList: this.updateItemBaseList,
+                    updateItemList: this.updateItemList,
+                    updatePriceList: this.updatePriceList,
                 }}
             />
         </div>
