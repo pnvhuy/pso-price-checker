@@ -170,8 +170,9 @@ class List extends Component {
 												{/* <td>{formatDate(price.created_on)}</td> */}
 												<td>{formatDate(price.updated_on)}</td>
 												<td>
-													<a href onClick={(event) => {
-														this.deletePrice(price.id)
+													<a href="#!" onClick={(event) => {
+														this.deletePrice(price.id);
+														event.preventDefault();
 													}}>X</a>
 												</td>
 											</tr>
@@ -224,8 +225,9 @@ class List extends Component {
 													<td>{baseItem.type_name ? baseItem.type_name : '-'}</td>
 													<td>{baseItem.special_name ? formatEnum(baseItem.special_name) : '-'}</td>
 													<td>
-														<a href onClick={(event) => {
-															this.deleteItemBase(baseItem.id)
+														<a href="#!" onClick={(event) => {
+															this.deleteItemBase(baseItem.id);
+															event.preventDefault();
 														}}>X</a>
 													</td>
 												</tr>
@@ -274,8 +276,9 @@ class List extends Component {
 													<td>{formatNumber(item.dfp)}</td>
 													<td>{formatNumber(item.evp)}</td>
 													<td>
-														<a href onClick={(event) => {
-															this.deleteItem(item.id)
+														<a href="#!" onClick={(event) => {
+															this.deleteItem(item.id);
+															event.preventDefault();
 														}}>X</a>
 													</td>
 												</tr>

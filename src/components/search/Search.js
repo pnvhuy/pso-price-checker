@@ -13,6 +13,8 @@ class Search extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleChangeHit = this.handleChangeHit.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.keyPressed = this.keyPressed.bind(this);
+
 	}
  
 	handleChange(event) {
@@ -33,28 +35,50 @@ class Search extends Component {
 		event.preventDefault();
 	}
 
+	keyPressed(event) {
+		if (event.key === "Enter") {
+			this.handleSubmit();
+		}
+	}
+
 	render() {
 		// const { itemTypes, itemSpecials, itemBaseList, itemList } = this.props.data;
 
 		return (
-			<div style={{
-			
-			}}>
+			<div>
+				<hr
+					style={{
+						backgroundColor: 'light-grey',
+						height: 1,
+						width: '100%',
+						marginTop: '60px',
+						marginBottom: '20px'
+					}}
+				/>
+
 				<div className="cm-form" style={{
-					padding: '60px 20px 20px',
+					padding: '40px 20px 20px',
 				}}>
+					
 					<div>
-						<h3>Search</h3>
+						<h3>Search Prices</h3>
 					</div>
-					<form>
-						<input type="text" name="search-name" id="search-name" value={this.state.name} onChange={this.handleChange} />
+					<div>
+						<input 
+							type="text" 
+							name="search-name" 
+							id="search-name" 
+							value={this.state.name} 
+							onChange={this.handleChange} 
+							onKeyPress={this.keyPressed}
+						/>
 
 						{/* <label> Hit:
 							<input type="number" name="search-hit" id="search-hit" value={this.state.hit} onChange={this.handleChangeHit} />
 						</label> */}
 
 						<input type="button" value="Go!" onClick={this.handleSubmit} />
-					</form>
+					</div>
 				</div>
 			</div>
 
