@@ -4,6 +4,7 @@ import './App.css';
 
 import Form from './components/form/Form';
 import List from './components/list/List';
+import Search from './components/search/Search';
 
 const dbUrl = "http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200";
 
@@ -19,6 +20,10 @@ class App extends Component {
             itemBaseList: [],
             itemList: [],
             priceList: [],
+            search: {
+                name: '',
+                hit: '',
+            }
         };
 
         fetch(`${dbUrl}/items-type`, {
@@ -89,6 +94,7 @@ class App extends Component {
         this.updateItemBaseList = this.updateItemBaseList.bind(this);
         this.updateItemList = this.updateItemList.bind(this);
         this.updatePriceList = this.updatePriceList.bind(this);
+        this.updateSearch = this.updateSearch.bind(this);
     }
         
     updateItemBaseList() {
@@ -122,7 +128,9 @@ class App extends Component {
     }
 
     updatePriceList() {
-        fetch(`${dbUrl}/prices`, {
+        const queryString = this.state.search.name ? `?search=${this.state.search.name}` : '';
+
+        fetch(`${dbUrl}/prices${queryString}`, {
 			method: 'GET',
 		})
 		.then(response => response.json())
@@ -134,6 +142,17 @@ class App extends Component {
 		.catch((error) => {
 			console.error('Error:', error);
         });
+    }
+
+    updateSearch(name, hit) {
+        this.setState({
+            search: {
+                name,
+                hit,
+            }
+        }, () => {
+            this.updatePriceList();
+        })
     }
 
   render() {
@@ -165,11 +184,24 @@ class App extends Component {
         </div>
 
         <div>
+            <Search 
+                methods={{
+                    updateSearch: this.updateSearch,
+                }}
+            />
+        </div>
+
+        <div>
             <List 
                 data={{ 
                     itemBaseList,
                     itemList,
                     priceList
+                }}
+                methods={{
+                    updateItemBaseList: this.updateItemBaseList,
+                    updateItemList: this.updateItemList,
+                    updatePriceList: this.updatePriceList,
                 }}
             />
         </div>

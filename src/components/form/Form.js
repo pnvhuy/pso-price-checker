@@ -5,6 +5,42 @@ const dbUrl = "http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200";
 const itemCategories = ['WEAPON', 'FRAME', 'BARRIER', 'UNIT', 'MAG', 'TECHNIQUE', 'TOOL'];
 const priceTypes = ['BUY', 'SELL', 'AUCTION', 'PRICE_CHECK', 'MANUAL'];
 
+function isNumber(n) { //includes strings that are numbers 
+	return !isNaN(parseFloat(n)) && !isNaN(n - 0);
+}
+
+function formatItemStats(item) {
+
+	if(item.category === 'WEAPON') {
+		let stats = '';
+
+		// Add special if has one
+		if(item.special_name) {
+			stats += `[${item.special_name}] `;
+		}
+		
+		// Add % attributes if has any
+		if(
+			isNumber(item.native) || 
+			isNumber(item.altered_beast) ||
+			isNumber(item.machine) ||
+			isNumber(item.dark)
+		) {
+			const native = item.native ? item.native : 0;
+			const altered_beast = item.altered_beast ? item.altered_beast : 0;
+			const machine = item.machine ? item.machine : 0;
+			const dark = item.dark ? item.dark : 0;
+			const hit = item.hit ? item.hit : 0;
+			stats += `[${native}/${altered_beast}/${machine}/${dark}|${hit}]`;
+		} else if(isNumber(item.hit)) {
+			// If doesn't have attributes but has hit
+			stats += `${item.hit}h`;
+		}
+
+		return stats;
+	}
+}
+
 class Form extends Component {
 
 	constructor(props) {
@@ -437,7 +473,7 @@ class Form extends Component {
 								<option value={''}>{'None'}</option>
 
 								{itemList.map((item, i) => (
-									<option key={i} value={item.id}>{item.base_name} [{item.native}/{item.altered_beast}/{item.machine}/{item.dark}|{item.hit}]</option>
+									<option key={i} value={item.id}>{item.base_name} {formatItemStats(item)}</option>
 								))}
 							</select>
 						</label>

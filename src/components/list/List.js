@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
 
+import { lowerCase, startCase } from 'lodash';
+
+const dbUrl = "http://ec2-54-201-217-62.us-west-2.compute.amazonaws.com:4200";
+
+
+function isNumber(n) { //includes strings that are numbers 
+	return !isNaN(parseFloat(n)) && !isNaN(n - 0);
+}
+
 function formatDate(dateString) {
 	const d = new Date(dateString);
 	const ye = String(d.getFullYear()).slice(-2);
@@ -7,6 +16,49 @@ function formatDate(dateString) {
 	const da = d.getDate();
 
 	return `${mo}/${da}/${ye}`;
+}
+
+function formatNumber(value) {
+	if(isNumber(value)) {
+		return String(value);
+	} else {
+		return '-';
+	}
+}
+
+function formatEnum(enumerable) {
+	return startCase(lowerCase(enumerable));
+}
+
+function formatPriceStats(price) {
+	if(price.item_category === 'WEAPON') {
+		let stats = '';
+
+		// Add special if has one
+		if(price.item_special_name) {
+			stats += `[${price.item_special_name}] `;
+		}
+		
+		// Add % attributes if has any
+		if(
+			isNumber(price.item_native) || 
+			isNumber(price.item_altered_beast) ||
+			isNumber(price.item_machine) ||
+			isNumber(price.item_dark)
+		) {
+			const item_native = price.item_native ? price.item_native : 0;
+			const item_altered_beast = price.item_altered_beast ? price.item_altered_beast : 0;
+			const item_machine = price.item_machine ? price.item_machine : 0;
+			const item_dark = price.item_dark ? price.item_dark : 0;
+			const item_hit = price.item_hit ? price.item_hit : 0;
+			stats += `[${item_native}/${item_altered_beast}/${item_machine}/${item_dark}|${item_hit}]`;
+		} else if(isNumber(price.item_hit)) {
+			// If doesn't have attributes but has hit
+			stats += `${price.item_hit}h`;
+		}
+
+		return stats;
+	}
 }
 
 class List extends Component {
@@ -17,6 +69,50 @@ class List extends Component {
 
 		this.state = {
 		}
+
+		this.deletePrice = this.deletePrice.bind(this);
+	}
+
+	deleteItemBase(id) {
+		fetch(`${dbUrl}/items-base/${id}`, {
+			method: 'DELETE',
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				this.props.methods.updateItemBaseList();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+	}
+
+	deleteItem(id) {
+		fetch(`${dbUrl}/items/${id}`, {
+			method: 'DELETE',
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				this.props.methods.updateItemList();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+	}
+
+	deletePrice(id) {
+		fetch(`${dbUrl}/prices/${id}`, {
+			method: 'DELETE',
+		})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				this.props.methods.updatePriceList();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
 	}
 
   	render() {
@@ -60,18 +156,24 @@ class List extends Component {
 										<th>Complete</th>
 										{/* <th>Created</th> */}
 										<th>Updated</th>
+										<th></th>
 									</tr>
 								</thead>
 								<tbody>
 									{validPriceList.map((price, i) => {
 										return (
 											<tr key={i} >
-												<td>{price.item_base_name} {price.item_special_name ? `[${price.item_special_name}] ` : ''}[{price.item_native}/{price.item_altered_beast}/{price.item_machine}/{price.item_dark}|{price.item_hit}]</td>
-												<td>{price.type}</td>
+												<td>{price.item_base_name} {formatPriceStats(price)}</td>
+												<td>{formatEnum(price.type)}</td>
 												<td>{price.value}</td>
 												<td>{Boolean(price.is_complete) ? '✓' : '-'}</td>
 												{/* <td>{formatDate(price.created_on)}</td> */}
 												<td>{formatDate(price.updated_on)}</td>
+												<td>
+													<a href onClick={(event) => {
+														this.deletePrice(price.id)
+													}}>X</a>
+												</td>
 											</tr>
 										)
 									})}
@@ -110,6 +212,7 @@ class List extends Component {
 											<th>Category</th>
 											<th>Type</th>
 											<th>Special</th>
+											<th></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -117,9 +220,14 @@ class List extends Component {
 											return (
 												<tr key={i} >
 													<td>{baseItem.name}</td>
-													<td>{baseItem.category}</td>
-													<td>{baseItem.type_name}</td>
-													<td>{baseItem.special_name}</td>
+													<td>{formatEnum(baseItem.category)}</td>
+													<td>{baseItem.type_name ? baseItem.type_name : '-'}</td>
+													<td>{baseItem.special_name ? formatEnum(baseItem.special_name) : '-'}</td>
+													<td>
+														<a href onClick={(event) => {
+															this.deleteItemBase(baseItem.id)
+														}}>X</a>
+													</td>
 												</tr>
 											)
 										})}
@@ -142,13 +250,14 @@ class List extends Component {
 										<tr>
 											<th>Item Base</th>
 											<th>Special</th>
-											<th>Native</th>
-											<th>A. Beast</th>
-											<th>Machine</th>
-											<th>Dark</th>
+											<th>N</th>
+											<th>AB</th>
+											<th>M</th>
+											<th>D</th>
 											<th>Hit</th>
 											<th>DFP</th>
 											<th>EVP</th>
+											<th></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -156,14 +265,19 @@ class List extends Component {
 											return (
 												<tr key={i} >
 													<td>{item.base_name}</td>
-													<td>{item.special_name ? item.special_name : item.base_special_name ? item.base_special_name : '-'}</td>
-													<td>{item.native ? item.native : '-'}</td>
-													<td>{item.altered_beast ? item.altered_beast : '-'}</td>
-													<td>{item.machine ? item.machine : '-'}</td>
-													<td>{item.dark ? item.dark : '-'}</td>
-													<td>{item.hit ? item.hit : '-'}</td>
-													<td>{item.dfp ? item.dfp : '-'}</td>
-													<td>{item.evp ? item.evp : '-'}</td>
+													<td>{item.special_name ? item.special_name : item.base_special_name ? formatEnum(item.base_special_name) : '-'}</td>
+													<td>{formatNumber(item.native)}</td>
+													<td>{formatNumber(item.altered_beast)}</td>
+													<td>{formatNumber(item.machine)}</td>
+													<td>{formatNumber(item.dark)}</td>
+													<td>{formatNumber(item.hit)}</td>
+													<td>{formatNumber(item.dfp)}</td>
+													<td>{formatNumber(item.evp)}</td>
+													<td>
+														<a href onClick={(event) => {
+															this.deleteItem(item.id)
+														}}>X</a>
+													</td>
 												</tr>
 											)
 										})}
